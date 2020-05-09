@@ -1,47 +1,24 @@
-# импортируем библиотеки
 from flask import Flask, request
 import logging
 import os
 import json
 
-# создаём приложение
-# мы передаём __name__, в нем содержится информация,
-# в каком модуле мы находимся.
-# В данном случае там содержится '__main__',
-# так как мы обращаемся к переменной из запущенного модуля.
-# если бы такое обращение, например,
-# произошло внутри модуля logging, то мы бы получили 'logging'
 app = Flask(__name__)
 
-# Устанавливаем уровень логирования
 logging.basicConfig(level=logging.INFO)
-# Создадим словарь, чтобы для каждой сессии общения
-# с навыком хранились подсказки, которые видел пользователь.
-# Это поможет нам немного разнообразить подсказки ответов
-# (buttons в JSON ответа).
-# Когда новый пользователь напишет нашему навыку,
-# то мы сохраним в этот словарь запись формата
-# sessionStorage[user_id] = {'suggests': ["Не хочу.", "Не буду.", "Отстань!" ]}
-# Такая запись говорит, что мы показали пользователю эти три подсказки.
-# Когда он откажется купить слона,
-# то мы уберем одну подсказку. Как будто что-то меняется :)
+
 sessionStorage = {}
-animal = 'Слона'
+animal = 'слона'
 shop = 'слон'
 end = False
 
 
 @app.route('/post', methods=['POST'])
-# Функция получает тело запроса и возвращает ответ.
-# Внутри функции доступен request.json - это JSON,
-# который отправила нам Алиса в запросе POST
 def main():
     global end
     end = False
     logging.info(f'Request: {request.json!r}')
-    # Начинаем формировать ответ, согласно документации
-    # мы собираем словарь, который потом при помощи
-    # библиотеки json преобразуем в JSON и отдадим Алисе
+
     response = {
         'session': request.json['session'],
         'version': request.json['version'],
@@ -49,12 +26,10 @@ def main():
             'end_session': False
         }
     }
-    # Отправляем request.json и response в функцию handle_dialog.
-    # Она сформирует оставшиеся поля JSON, которые отвечают
-    # непосредственно за ведение диалога
+
     handle_dialog(request.json, response)
     logging.info(f'Response:  {response!r}')
-    # Преобразовываем в JSON и возвращаем
+
     return json.dumps(response)
 
 
@@ -85,14 +60,9 @@ def handle_dialog(req, res):
     # Если он написал 'ладно', 'куплю', 'покупаю', 'хорошо',
     # то мы считаем, что пользователь согласился.
     # Подумайте, всё ли в этом фрагменте написано "красиво"?
-    if req['request']['original_utterance'].lower() in [
-        'ладно',
-        'куплю',
-        'покупаю',
-        'хорошо',
-        'я куплю',
-        'я покупаю'
-    ]:
+    if 'ладно' in req['request']['original_utterance'].lower() or 'куплю' in req['request'][
+        'original_utterance'].lower() or 'покупаю' in req['request'][
+        'original_utterance'].lower() or 'хорошо' in req['request']['original_utterance'].lower():
         # Пользователь согласился, прощаемся.
         res['response']['text'] = f'{animal} можно найти на Яндекс.Маркете!'
         # res['response']['end_session'] = True
@@ -109,14 +79,14 @@ def handle_dialog(req, res):
             res['response']['text'] = 'А теперь купи Кролика'
             res['response']['buttons'] = get_suggests(user_id)
             # Получим подсказки
-            animal = 'Кролика'
+            animal = 'кролика'
             shop = 'кролик'
             return
         else:
             get_suggests(user_id)
     # Если нет, то убеждаем его купить слона!
     if end:
-        res['response']['text'] = 'Поздравляю с приобретением'
+        res['response']['text'] = 'Покупка совершена. Деньги списаны с вашего счета!'
         res['response']['end_session'] = True
     else:
         res['response']['text'] = \
