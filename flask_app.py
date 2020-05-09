@@ -76,7 +76,7 @@ def handle_dialog(req, res):
                 ]
             }
             # Заполняем текст ответа
-            res['response']['text'] = 'А теперь купи Кролика'
+            res['response']['text'] = 'А теперь купи кролика'
             res['response']['buttons'] = get_suggests(user_id)
             # Получим подсказки
             animal = 'кролика'
@@ -86,7 +86,8 @@ def handle_dialog(req, res):
             get_suggests(user_id)
     # Если нет, то убеждаем его купить слона!
     if end:
-        res['response']['text'] = 'Покупка совершена. Деньги списаны с вашего счета!'
+
+        res['response']['text'] = f"https://market.yandex.ru/search?text={shop}"
         res['response']['end_session'] = True
     else:
         res['response']['text'] = \
