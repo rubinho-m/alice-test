@@ -71,7 +71,7 @@ def handle_dialog(req, res):
             who = 'кролик'
             return
         else:
-            get_suggests(user_id)
+            end = True
     if end:
         res['response']['text'] = 'Покупка совершена. Деньги списаны с вашего счета'
         res['response']['end_session'] = True
@@ -81,7 +81,7 @@ def handle_dialog(req, res):
         res['response']['buttons'] = get_suggests(user_id)
 
     res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
+        f"Все говорят '{req['request']['original_utterance']}', а ты купи {obj}!"
     res['response']['buttons'] = get_suggests(user_id)
 
 
@@ -106,8 +106,6 @@ def get_suggests(user_id):
             "url": f"https://market.yandex.ru/search?text={who}",
             "hide": True
         })
-
-    end = True
 
     return suggests
 
