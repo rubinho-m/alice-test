@@ -1,6 +1,7 @@
 from flask import Flask, request
 import logging
 import json
+import os
 from geo import get_country, get_distance, get_coordinates
 
 app = Flask(__name__)
