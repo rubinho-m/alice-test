@@ -1,10 +1,11 @@
 from flask import Flask, request
 import logging
 import json
+import os
 import random
-from flask_ngrok import run_with_ngrok
+
 app = Flask(__name__)
-run_with_ngrok(app)
+
 logging.basicConfig(level=logging.INFO)
 cities = {
     'москва': ['1030494/10a30af6439f7097a99e', '1030494/981240bd1f6fef0261ce'],
@@ -12,6 +13,8 @@ cities = {
     'париж': ['1533899/3f364fdf20a794b9ca41', '1030494/5bbdf58f7a862a3b86fc']
 }
 sessionStorage = {}
+
+
 @app.route('/post', methods=['POST'])
 def main():
     logging.info('Request: %r', request.json)
@@ -34,14 +37,15 @@ def handle_dialog(res, req):
         res['response']['text'] = 'Привет! Назови своё имя!'
         sessionStorage[user_id] = {
             'first_name': None,  # здесь будет храниться имя
-            'game_started': False  # здесь информация о том, что пользователь начал игру. По умолчанию False
+            'game_started': False
+            # здесь информация о том, что пользователь начал игру. По умолчанию False
         }
         return
     if 'помощь' in req['request']['nlu']['tokens']:
         res['response']['text'] = 'Эта игра, ' \
-                          'в которой я тебе показываю картинку, ' \
-                          'а ты должен угалать, что за город на ней изображён. ' \
-                          'Ну так что?'
+                                  'в которой я тебе показываю картинку, ' \
+                                  'а ты должен угалать, что за город на ней изображён. ' \
+                                  'Ну так что?'
         return
     if sessionStorage[user_id]['first_name'] is None:
         first_name = get_first_name(req)
@@ -53,7 +57,8 @@ def handle_dialog(res, req):
             sessionStorage[user_id]['guessed_cities'] = []
             # как видно из предыдущего навыка, сюда мы попали, потому что пользователь написал своем имя.
             # Предлагаем ему сыграть и два варианта ответа "Да" и "Нет".
-            res['response']['text'] = f'Приятно познакомиться, {first_name.title()}. Я Алиса. Отгадаешь город по фото?'
+            res['response'][
+                'text'] = f'Приятно познакомиться, {first_name.title()}. Я Алиса. Отгадаешь город по фото?'
             res['response']['buttons'] += [
                 {
                     'title': 'Да',
@@ -173,4 +178,4 @@ def get_first_name(req):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=os.environ["PORT"])
