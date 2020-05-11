@@ -41,6 +41,7 @@ def handle_dialog(res, req):
         res['response']['text'] = 'Расстояние между этими городами: ' + str(round(distance)) + ' км.'
     else:
         res['response']['text'] = 'Слишком много городов!'
+    return 
 
 
 def get_cities(req):
