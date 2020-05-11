@@ -30,7 +30,7 @@ def handle_dialog(res, req):
     if req['session']['new']:
         res['response'][
             'text'] = 'Привет! Я могу сказать в какой стране город или сказать расстояние между городами!'
-        return
+        return res
 
     cities = get_cities(req)
     if len(cities) == 0:
