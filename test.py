@@ -42,9 +42,9 @@ def handle_dialog(res, req):
         }
         return
     if 'помощь' in req['request']['nlu']['tokens']:
-        res['response']['text'] = 'Эта игра, ' \
+        res['response']['text'] = 'Это игра, ' \
                                   'в которой я тебе показываю картинку, ' \
-                                  'а ты должен угалать, что за город на ней изображён. ' \
+                                  'а ты должен угадать, что за город на ней изображён. ' \
                                   'Ну так что?'
         return
     if sessionStorage[user_id]['first_name'] is None:
