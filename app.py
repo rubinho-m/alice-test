@@ -6,8 +6,8 @@ from geo import get_country, get_distance, get_coordinates
 
 app = Flask(__name__)
 
-
-logging.basicConfig(level=logging.INFO, filename='app.log', format='%(asctime)s %(levelname)s %(name)s %(message)s')
+logging.basicConfig(level=logging.INFO, filename='app.log',
+                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
 
 
 @app.route('/post', methods=['POST'])
@@ -20,7 +20,7 @@ def main():
             'end_session': False
         }
     }
-    handle_dialog(response, request.json)
+    response = handle_dialog(response, request.json)
     logging.info('Response: %r', response)
     return json.dumps(response)
 
@@ -28,7 +28,8 @@ def main():
 def handle_dialog(res, req):
     user_id = req['session']['user_id']
     if req['session']['new']:
-        res['response']['text'] = 'Привет! Я могу сказать в какой стране город или сказать расстояние между городами!'
+        res['response'][
+            'text'] = 'Привет! Я могу сказать в какой стране город или сказать расстояние между городами!'
         return
 
     cities = get_cities(req)
@@ -41,7 +42,7 @@ def handle_dialog(res, req):
         res['response']['text'] = 'Расстояние между этими городами: ' + str(round(distance)) + ' км.'
     else:
         res['response']['text'] = 'Слишком много городов!'
-    return 
+    return res
 
 
 def get_cities(req):
